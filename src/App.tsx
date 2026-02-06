@@ -3,6 +3,7 @@ import {Home} from "./screens/home";
 import {Login} from "./screens/login";
 import {Admin} from "./screens/admin";
 import {Networks} from "./screens/networks";
+import { Private } from "./routes/Private";
 const router = createBrowserRouter([
     {
         path: "/",
@@ -15,11 +16,11 @@ const router = createBrowserRouter([
     },
     {
         path: "/admin",
-        element: <Admin />
+        element: <Private><Admin /></Private>
     },
     {
         path: "/admin/networks",
-        element: <Networks />
+        element: <Private><Networks /></Private>
     }
 ]);
 
