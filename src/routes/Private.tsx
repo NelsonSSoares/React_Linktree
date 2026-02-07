@@ -8,37 +8,40 @@ interface PrivateProps {
   children: ReactNode;
 }
 
-export function Private({ children }: PrivateProps): any {
+export function Private({ children }: PrivateProps) {
   const [loading, setLoading] = useState(true);
   const [signed, setSigned] = useState(false);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(
-      auth,
-      (user) => {
-        if (user) {
-          const userData = {
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-          };
-          localStorage.setItem("@linktree", JSON.stringify(userData));
-          setLoading(false);
-          setSigned(true);
-        } else {
-          setLoading(false);
-          setSigned(false);
-        }
-        return () => unsub()
-      },[]);
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const userData = {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+        };
 
-    if (loading) {
-      return <div>Loading...</div>;
-    }
-    if (!signed) {
-      return <Navigate to="/login" />; 
-    }
-  });
+        localStorage.setItem("@linktree", JSON.stringify(userData));
+        setSigned(true);
+      } else {
+        setSigned(false);
+      }
+
+      setLoading(false);
+    });
+
+    return () => unsub();
+  }, []);
+
+  
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!signed) {
+    return <Navigate to="/login" replace />;
+  }
 
   return children;
 }
+
