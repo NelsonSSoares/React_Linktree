@@ -1,6 +1,6 @@
 import { Header } from "../../components/Header";
 import { Input } from "../../components/Input";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { FiTrash } from "react-icons/fi";
 import { db } from "../../services/firebaseConnection";
 import {
@@ -13,11 +13,20 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 
+interface LinkProps {
+  id: string;
+  name: string;
+  url: string;
+  textColor: string;
+  background: string;
+}
+
 export function Admin() {
   const [nameInput, setNameInput] = useState("");
   const [urlInput, setUrlInput] = useState("");
   const [textColorInput, setTextColorInput] = useState("#f1f1f1");
   const [backgroundInput, setBackgroundInput] = useState("#121212");
+  const [links, setLinks] = useState<LinkProps[]>([]);
 
   function handleRegister(event: FormEvent): void {
     event.preventDefault();
@@ -38,6 +47,27 @@ export function Admin() {
         console.log("Error adding document: ", error);
       });
   }
+
+  useEffect(() => {
+    const linksRef = collection(db, "links");
+    const queryRef = query(linksRef, orderBy("created", "asc"));
+    const unsub = onSnapshot(queryRef, (snapshot) => {
+      const list = [] as LinkProps[];
+
+      snapshot.forEach((doc) => {
+        list.push({
+          id: doc.id,
+          name: doc.data().name,
+          url: doc.data().url,
+          textColor: doc.data().textColor,
+          background: doc.data().background,
+        });
+      });
+      setLinks(list); 
+    });
+    return () => unsub();
+  }, []);
+
 
   return (
     <div className="flex items-center flex-col min-h-screen pb-7 px-2">
