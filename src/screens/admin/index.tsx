@@ -1,17 +1,51 @@
 import { Header } from "../../components/Header";
 import { Input } from "../../components/Input";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { FiTrash } from "react-icons/fi";
+import { db } from "../../services/firebaseConnection";
+import {
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  doc,
+  deleteDoc,
+  onSnapshot,
+} from "firebase/firestore";
 
 export function Admin() {
   const [nameInput, setNameInput] = useState("");
   const [urlInput, setUrlInput] = useState("");
   const [textColorInput, setTextColorInput] = useState("#f1f1f1");
   const [backgroundInput, setBackgroundInput] = useState("#121212");
+
+  function handleRegister(event: FormEvent): void {
+    event.preventDefault();
+    if (nameInput === "" || urlInput === "") return;
+
+    addDoc(collection(db, "links"), {
+      name: nameInput,
+      url: urlInput,
+      textColor: textColorInput,
+      background: backgroundInput,
+      created: new Date(),
+    })
+      .then(() => {
+        setNameInput("");
+        setUrlInput("");
+      })
+      .catch((error) => {
+        console.log("Error adding document: ", error);
+      });
+  }
+
   return (
     <div className="flex items-center flex-col min-h-screen pb-7 px-2">
       <Header />
-      <form className="flex flex-col mt-3 mb-3 w-full max-w-xl">
+      <form
+        className="flex flex-col mt-3 mb-3 w-full max-w-xl"
+        onSubmit={handleRegister}
+      >
         <label className="text-white font-medium mt-2 mb-2">Link name: </label>
         <Input
           value={nameInput}
