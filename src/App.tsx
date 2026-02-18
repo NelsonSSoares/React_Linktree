@@ -4,6 +4,7 @@ import {Login} from "./screens/login";
 import {Admin} from "./screens/admin";
 import {Networks} from "./screens/networks";
 import { Private } from "./routes/Private";
+import { ErrorPage } from "./screens/error";
 const router = createBrowserRouter([
     {
         path: "/",
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
     {
         path: "/admin/networks",
         element: <Private><Networks /></Private>
+    },
+    {
+        path: "*",
+        element: <ErrorPage />
     }
 ]);
 
