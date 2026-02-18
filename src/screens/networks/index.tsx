@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Header } from "../../components/Header";
 import {db } from "../../services/firebaseConnection";
-import { setDoc, doc } from "firebase/firestore";
+import { setDoc, doc, getDoc } from "firebase/firestore";
 import { Input } from "../../components/Input";
 
 export function Networks() {
@@ -9,6 +9,24 @@ export function Networks() {
   const [instagramLink, setInstagramLink] = useState("");
   const [linkedinLink, setLinkedinLink] = useState("");
   const [youtubeLink, setYoutubeLink] = useState("");
+
+  useEffect(() => {
+    function loadLinks() {
+      const docRef = doc(db, "social", "link");
+      getDoc(docRef)
+      .then((snapshot)=>{
+        console.log(snapshot.data());
+        
+        if(snapshot.data() !== undefined) {
+          setFacebookLink(snapshot.data()?.facebook || "");
+          setInstagramLink(snapshot.data()?.instagram || "");
+          setLinkedinLink(snapshot.data()?.linkedin || "");
+          setYoutubeLink(snapshot.data()?.youtube || "");
+        }
+      })
+    }
+    loadLinks();
+  }, []);
 
   function handleRegister(e: React.FormEvent) {
     e.preventDefault();
@@ -22,7 +40,7 @@ export function Networks() {
         alert("Link saved successfully!");
 
     }).catch((error) => {
-        alert("Error saving link: ", error);
+        alert("Error saving link: " + error);
     });
   }
 
